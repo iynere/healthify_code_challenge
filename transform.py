@@ -33,7 +33,7 @@ NATURAL LANGUAGE PROCESSING?
 there's a wide range of NLP modules and frameworks for Python. however, part of speech taggers aren't really able to detect improperly lowercased prooper nouns, so we are back at square 1...
 
 with a large enough sample size & enough time, implementing something like this seems promising:
-	
+  
 https://cs.cmu.edu/~llita/papers/lita.truecasing-acl2003.pdf
 
 or, with the rapid rise of relatively simple machine-learning tools, it might be effective to train an ai on a large corpus of text & add the ai to the ETL pipeline
@@ -49,41 +49,41 @@ d = enchant.Dict("en_US")
 input = petl.fromcsv('data.csv')
 
 def reverse_titlecase(description):
-	# check if this is one of the rows that was title-cased
-	if all(word[0].capitalize() == word[0] for word in description):
-		return ' '.join(description).lower().capitalize().split(' ')
-	else:
-		return description
-		
+  # check if this is one of the rows that was title-cased
+  if all(word[0].capitalize() == word[0] for word in description):
+    return ' '.join(description).lower().capitalize().split(' ')
+  else:
+    return description
+    
 def lookup_word(word):
-	# if there's a simple suggestion that is titlecased, replace the word with that titlecased suggestion
-	if not d.check(re.sub(r'[^0-9A-Za-z]', '', word)):
-		if d.suggest(re.sub(r'[^0-9A-Za-z]', '', word)):
-			if d.suggest(re.sub(r'[^0-9A-Za-z]', '', word))[0].lower() == re.sub(r'[^0-9A-Za-z]', '', word).lower():
-				return d.suggest(re.sub(r'[^0-9A-Za-z]', '', word))[0] + word[len(re.sub(r'[^0-9A-Za-z]', '', word)):]
-	return word
+  # if there's a simple suggestion that is titlecased, replace the word with that titlecased suggestion
+  if not d.check(re.sub(r'[^0-9A-Za-z]', '', word)):
+    if d.suggest(re.sub(r'[^0-9A-Za-z]', '', word)):
+      if d.suggest(re.sub(r'[^0-9A-Za-z]', '', word))[0].lower() == re.sub(r'[^0-9A-Za-z]', '', word).lower():
+        return d.suggest(re.sub(r'[^0-9A-Za-z]', '', word))[0] + word[len(re.sub(r'[^0-9A-Za-z]', '', word)):]
+  return word
 
 def check_dict_suggestions(description):
-	# map over the description list using the lookup_word method
-	return map(lookup_word, description)
-	
+  # map over the description list using the lookup_word method
+  return map(lookup_word, description)
+  
 def cap_sentences(description):
-	split_on_period = ' '.join(description).split('. ')
-	# map over the description list using the lookup_word method
-	return map(lambda str_seg: str_seg.capitalize(), split_on_period)
+  split_on_period = ' '.join(description).split('. ')
+  # map over the description list using the lookup_word method
+  return map(lambda str_seg: str_seg.capitalize(), split_on_period)
 
 def row_mapper(row):
-	row_id = str(row[0])
-	description = str(row[1]).split(' ')
-	
-	# check if this is one of the rows that was title-cased
-	de_titled_desc = reverse_titlecase(description)
-	
-	# check some basic potential dictionary capitalization issues—low-hanging fruit
-	dicted_desc = check_dict_suggestions(de_titled_desc)
-	
-	final = '. '.join(cap_sentences(dicted_desc))
-			
-	return [row_id, final]
+  row_id = str(row[0])
+  description = str(row[1]).split(' ')
+  
+  # check if this is one of the rows that was title-cased
+  de_titled_desc = reverse_titlecase(description)
+  
+  # check some basic potential dictionary capitalization issues—low-hanging fruit
+  dicted_desc = check_dict_suggestions(de_titled_desc)
+  
+  final = '. '.join(cap_sentences(dicted_desc))
+      
+  return [row_id, final]
 
 petl.rowmap(input, row_mapper, ['id', 'description'], failonerror=True).tocsv('output.csv')

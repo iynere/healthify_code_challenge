@@ -1,17 +1,31 @@
 # -*- coding: utf-8 -*-
 
 '''
+nlp info:
+https://github.com/smilli/py-corenlp
+http://www.nltk.org/nltk_data/
+https://docs.python.org/2/library/pickle.html
+https://scipy.org/install.html
+https://www.continuum.io/downloads
+https://www.enthought.com/products/canopy/
+http://www.pyzo.org/
+
+'''
+
+'''
 APPROACH:
 1. we can easily detect which sentences have been accidentally title-cased: the 1st letter of each word will be capitalized. we can easily lowercase the entire string for that row, and then capitalize the first letter. we may, however, lose some properly title-cased nouns along the way.
 
-2. we can easily check words against a dictionary to find common proper nouns (ie, 'America', 'USA'); if the word doesn't exist in the dictionary (ie, 'america', 'usa') & the lowcased word is equal to the first dict suggestion, lowcased, then it's probably a situation where we can simply replace the word with that dictionary suggestion. this takes care of examples like the 2 already mentioned, as well state names, very famous people, etc. this takes a very long time, as its checking every word in 20,000 rows of data, but i dont think there's any way around that, except maybe with some memoization.
+2. we can easily check words against a dictionary to find common proper nouns (ie, 'America', 'USA'); if the word doesn't exist in the dictionary (ie, 'america', 'usa') & the lowcased word is equal to the first dict suggestion, but lowcased, then it's probably a situation where we can simply replace the word with that dictionary suggestion. this takes care of examples like the 2 already mentioned, as well state names, very famous people, etc. this takes a very long time, as it's checking every word in 20,000 rows of data, but i dont think there's any way around that, except maybe with some memoization.
 
-3. one more piece of low-hanging fruit: we can find '. ' and capitalize words after that
+3. we can also find '. ' and capitalize words after that
+
+4. we can also, in the process of low-casing the title-cased rows, 
 
 OPTIMIZATIONS?
 we could iterate through the csv & add all capitalized nouns we find to some kind of dict, then check lowercased nouns against it
 
-however, just because a noun is capitalized in one place (ie, 'Neighborly Care Network') doesn't mean it should always be capitalized...
+however, just because a noun is capitalized in one place (ie, 'Neighborly Care Network') doesn't mean it should be capitalized everywhere else (ie, 'we provide a network of care-related services')...
 
 there's a variety of mispelled words in the data, as well. can we do something about that without having to manually review the corrections?
 

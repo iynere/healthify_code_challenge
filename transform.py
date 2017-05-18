@@ -10,10 +10,32 @@ https://www.continuum.io/downloads
 https://www.enthought.com/products/canopy/
 http://www.pyzo.org/
 
+'delete / transpose / replace / insert'
+
+'''
+
+'''
+ml info:
+https://www.microsoft.com/en-us/research/project/transform-data-by-example
 '''
 
 '''
 APPROACH:
+0. describing the corpus:
+-there are no hyphens
+-there are no semicolons
+-there's no #, $, %, &, (), +-=
+-there are no internal quotation marks besides the single opening & closing ""
+-there are sometimes numbers in the corpus
+-all sentences end in periods (no question marks or exclamation marks)
+-there are no commas that are not followed by a space
+-there are mispelled and miscapitalized/mislowercased words
+-there are words that are missing spaces between them
+
+0.5
+-no value in storing a list of words, as we can't assume any particular sample is correctly spelled
+-no value in storing even a list of correct words
+
 1. we can easily detect which sentences have been accidentally title-cased: the 1st letter of each word will be capitalized. we can easily lowercase the entire string for that row, and then capitalize the first letter. we may, however, lose some properly title-cased nouns along the way.
 
 2. we can easily check words against a dictionary to find common proper nouns (ie, 'America', 'USA'); if the word doesn't exist in the dictionary (ie, 'america', 'usa') & the lowcased word is equal to the first dict suggestion, but lowcased, then it's probably a situation where we can simply replace the word with that dictionary suggestion. this takes care of examples like the 2 already mentioned, as well state names, very famous people, etc. this takes a very long time, as it's checking every word in 20,000 rows of data, but i dont think there's any way around that, except maybe with some memoization.
@@ -50,7 +72,7 @@ input = petl.fromcsv('data.csv')
 
 def reverse_titlecase(description):
   # check if this is one of the rows that was title-cased
-  if all(word[0].capitalize() == word[0] for word in description):
+  if all(word.istitle() for word in description):
     return ' '.join(description).lower().capitalize().split(' ')
   else:
     return description

@@ -1,46 +1,66 @@
 # -*- coding: utf-8 -*-
 
+# imports
 import re
+from enchant import Dict, tokenize
 
-'''
-RULES
--there are no hyphens
--there are no semicolons
--there's no #, $, %, &, (), +-=
--there are no internal quotation marks besides the single opening & closing ""
--there are sometimes numbers in the corpus
--all sentences end in periods (no question marks or exclamation marks)
--there are no commas that are not followed by a space
--there are mispelled and miscapitalized/mislowercased words
--there are words that are missing spaces between them
-'''
+# spellchecking
+dictionary = Dict('en_US')
+tokenizer = tokenize.get_tokenizer('en_US')
 
-def add_spaces_before(punctuation, string):
-  '''adds leading spaces to any marks in a given set of punctuation'''
-  return ''.join(map(lambda char: ' ' + char if char in punctuation else char, list(string)))
-  # 'hello, there.' -> 'hello , there .'
-  
-def remove_spaces_before(punctuation, string):
-  '''removes leading spaces from any marks in a given set of punctuation'''
-  return ''.join(map(lambda (idx, char): '' if char == ' ' and str[idx+1] in punctuation else char, enumerate(list(str))))
-  # 'hello , there .' -> 'hello, there.'
+def is_all_titlecased(string):
+	'''checks if each word in a string is titlecased'''
+	# enchant's tokenizer breaks a string into tokens of its constituent words, organized as tuples of the form (word, start_index)
+	return all(token[0].istitle() for token in list(tokenizer(string)))
 
-def words_list_from(string):
-  '''turns a string of words into a list of the words'''
-  # we need to separate words from their punctuation (just , & .)
-  # but we need to preserve the punctuation, so we can use nlp to determine to if, for example, a word is the first in a new sentence & should be title-cased.
-  # so we really need a completely parsed string, ie,
-  # "The Organization objective is to provide food to families and individuals in need. In addition, we provide clothing, limited financial assistance, and help coordinate other social services."
-  # to
-  # [The, Organization, Objective, is, to, provide, food, to, the, families, and, individuals, in, need, ., in, addition, ,, we, provide, clothing ,, limited, financial, assistance, ,, and, help, coordinate, other, social, services, .]
-  # because we also need to be able to correctly join the sentence back together, ie, we can't lose punctuation for good
-  # we could use an actual nlp parser
-  # but for now, simple solution:
-  # can't really use an actual regex, since we need to preserve what the character is
-  # we know it's just commas and periods
-  # 1. why not split('') then map & if char = . || , add a leading space, then rejoin('')
-  # 2. then split again on ' ' to do dictionary stuff
-  # 3. then join again
-  # 4. then map & reverse . / , stuff
-  # 5. there must be a better way ??????
-  
+def filter_periods(word):
+	'''filter out periods in acronyms/all-caps words'''
+	return re.sub(r'\.', '', word)
+
+def is_all_caps(word):
+	'''checks if a word is all-caps'''
+	# filter out '.' in case word is an acronym of the form 'U.S.A.' rather than 'USA'
+	return all(char.istitle() for char in list(filter_periods(word)))
+	
+def try_to_fix_case(word):
+	'''return top suggestion if it differs from word only in case, otherwise return original word '''
+	suggestions = dictionary.suggest(word)
+	
+	if suggestions:
+		if suggestions[0].lower() == word.lower():
+			return suggestions[0]
+	return word
+	
+def fix_sentence_titlecasing(string):
+	'''de-title-cases all non-all-caps, non-sentence-leading words in a completely title-cased string; otherwise returns the original string'''
+	if is_all_titlecased(string):
+		chars = list(string)
+		
+		# if word isn't all-caps and isn't a sentence-leader, lowercase it
+		for token in list(tokenizer(string)):
+			if not is_all_caps(token[0]) and not is_sentence_leading(token, string):
+				chars[token[1]] = chars[token[1]].lower()
+				
+		return ''.join(chars)
+	return string
+
+def is_sentence_leading(token, string):
+	'''checks if a word is at the beginning of a sentence within a given string'''
+	# either it's the string's first word , or there is a '.' at its start index - 2
+	return token[1] == 0 or  string[token[1] - 2] == '.'
+	
+def is_valid(word):
+	'''checks if word exists in dictionary'''
+	return dictionary.check(word)
+	
+def find_split_idx(smushed_words):
+	'''returns index where word can be split into 2 valid words, or else None'''
+	for index in range(1, len(smushed_words)):
+		if is_valid(smushed_words[0:index]) and is_valid(smushed_words[index:]):
+			return index
+	return None
+	
+def create_output_path(input_path):
+	'''creates output file in same directory as input file'''
+	return '/'.join(input_path.split('/')[0:-1]) + '/output.csv'
+	

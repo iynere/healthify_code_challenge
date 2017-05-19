@@ -12,5 +12,8 @@ test_data = {
   'no split exists': 'no_split_idx',
   'input path': '/path/to/input/file.csv',
   'regular sentence': 'Hey there.',
-  'titlecased sentence': "Every Word In This String Is Titlecased, AKA, Starts With A Capital Letter. Every Single One. God Bless The U.S.A."
+  'titlecased sentence': "Every Word In This String Is Titlecased, AKA, Starts With A Capital Letter. Every Single One. God Bless The U.S.A.",
+  'non-smushed sentence': 'hey lksdjfkldjf what is up',
+  'smushed sentence': 'heythere howgoes ittoday lkjasdlkfjlkdjf',
+  'wrong case': 'usa is the best but usal is an invalid word without a case-only suggestion'
 }

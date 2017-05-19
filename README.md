@@ -1,8 +1,24 @@
+Clean a 20,000-row .csv file.
+
+## Usage
+
+This program is written for Python 2.
+Required dependencies are [petl](http://petl.readthedocs.io) and [pyenchant](https://pythonhosted.org/pyenchant):
+
+```
+pip install petl
+pip install pyenchant
+```
+
+To run the tests: `pyenchant -v`
+
+To run the program: navigate to the `healthify_code_challenge` directory and run `python transform.py /path/to/input/file.csv`
+
+The cleaned data is outputted as `output.csv`, in the same directory as the input file.
+
 ## Overview
 
-[*skip to Usage*](https://github.com/isar0se/healthify_code_challenge#usage)
-
-Clean a 20,000-row .csv file. Data have two fields: id (integer) and description (string). There are a couple of different issues with the description data:
+Data have two fields: id (integer) and description (string). There are a couple of different issues with the description data:
 
 * some descriptions are entirely title-cased
 * some words are misspelled
@@ -55,19 +71,15 @@ One possibility w.r.t title-casing: if a lower-cased word doesn't exist in the d
 
 Another possibility w.r.t words with spaces missing between them: simply iterate over the characters, at each index checking if both the left-slice and right-slice are words. If we reach this point, we can reasonably assume that this is where the space is meant to go, and slice the string in two on that index. This will certainly not be 100% effective—there are probably many sets of two words that, when smushed together, have multiple ways of dividing them into two correct words—but it seems like a reasonable assumption for this corpus.
 
-Finally, we can probably assume that if a word in a non-all-title-cased string is capitalized once, it should be capitalized everywhere it appears (i.e., the name of an organization).
-
 ## Implementation
 
-I have written a Python program to clean this data. I use the [petl](http://petl.readthedocs.io) module to structure the ETL pipeline, the [pyenchant](https://pythonhosted.org/pyenchant) module for string parsing and spellchecking, and the [nltk](http://nltk.org) module for natural language processing.
-
-## Usage
-
-TKTK
+I have written a Python program to clean this data. I use the [petl](http://petl.readthedocs.io) module to structure the ETL pipeline and the [pyenchant](https://pythonhosted.org/pyenchant) module for string parsing and spellchecking.
 
 ## Further thoughts
 
-Given more time and a larger corpus, I believe machine learning, web scraping, and more complex parsing/transformation algorithms could help provide more comprehensive data cleaning with only a small loss to source-accuracy. Some examples and texts that seem instructive/promising:
+With more time, I would have written tests for the output file (it should have the same number of rows—it does), added a command-line progress bar (since the function takes some time to run), and looked into American place name dictionaries (it shouldn't be too hard to find one to check names of towns, counties, etc., against).
+
+I believe machine learning, web scraping, and more complex parsing/transformation algorithms could also help provide more comprehensive data cleaning with only a small loss to source-accuracy. Some examples and texts that seem instructive/promising:
 
 * ["Multi-Level Feature Extraction for Spelling Correction,"](http://research.ihost.com/and2007/cd/Proceedings_files/p79.pdf) by Johannes Schaback and Fang Li, *[IJCAI-2007 Workshop on Analytics for Noisy Unstructured Text Data](http://research.ihost.com/and2007)*
 * [Transform Data by Example - Microsoft Research](https://microsoft.com/en-us/research/project/transform-data-by-example)

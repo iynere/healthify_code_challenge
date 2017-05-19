@@ -31,6 +31,11 @@ def try_to_fix_case(word):
     if suggestions[0].lower() == word.lower():
       return suggestions[0]
   return word
+
+def is_sentence_leading(token, string):
+  '''checks if a word is at the beginning of a sentence within a given string'''
+  # either it's the string's first word , or there is a '.' at its start index - 2
+  return token[1] == 0 or  string[token[1] - 2] == '.'
   
 def fix_sentence_titlecasing(string):
   '''de-title-cases all non-all-caps, non-sentence-leading words in a completely title-cased string; otherwise returns the original string'''
@@ -44,11 +49,6 @@ def fix_sentence_titlecasing(string):
         
     return ''.join(chars)
   return string
-
-def is_sentence_leading(token, string):
-  '''checks if a word is at the beginning of a sentence within a given string'''
-  # either it's the string's first word , or there is a '.' at its start index - 2
-  return token[1] == 0 or  string[token[1] - 2] == '.'
   
 def is_valid(word):
   '''checks if word exists in dictionary'''
@@ -60,6 +60,36 @@ def find_split_idx(smushed_words):
     if is_valid(smushed_words[0:index]) and is_valid(smushed_words[index:]):
       return index
   return None
+
+def fix_sentence_smushes(string):
+  '''separate smushed-together words in a string'''
+  chars = list(string)
+  offset = 0
+  
+  for token in list(tokenizer(string)):
+    # if a word isn't valid
+    if not is_valid(token[0]):
+      # run split index—this will be either a valid index, or None
+      split_idx = find_split_idx(token[0])
+      # if it's a valid index
+      if split_idx:
+        # insert a space in the chars list at the appropriate index within the tokenized smushed word
+        insertion_index = token[1] + split_idx + offset
+        chars.insert(insertion_index, ' ')
+        offset += 1
+  return ''.join(chars)
+  
+def make_suggested_case_corrections(string):
+  '''replace invalid words with suggested casing-only corrections if they exist'''
+  chars = list(string)
+  
+  for token in list(tokenizer(string)):
+    if not is_valid(token[0]):
+      start = token[1]
+      end = start + len(token[0])
+      chars[start:end] = list(try_to_fix_case(token[0]))
+      
+  return ''.join(chars)
   
 def create_output_path(input_path):
   '''creates output file in same directory as input file'''

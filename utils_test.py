@@ -3,7 +3,7 @@
 # imports
 import pytest
 from enchant import tokenize
-from utils import is_all_titlecased, is_all_caps, filter_periods, try_to_fix_case, fix_sentence_titlecasing, is_sentence_leading, find_split_idx, create_output_path
+from utils import is_all_titlecased, is_all_caps, filter_periods, try_to_fix_case, fix_sentence_titlecasing, is_sentence_leading, make_suggested_case_corrections, find_split_idx, fix_sentence_smushes, create_output_path
 from test_data import test_data
 
 # spellchecking
@@ -66,11 +66,24 @@ def test_sentence_case_fixer():
   # or in a new sentence within the string
   assert word_tokens_after[13][0] == word_tokens_before[13][0]
   
+def test_casing_corrections():
+  '''make sure the case-correction function is working'''
+  # fixes case, ignores words without a valid suggested correction, leaves valid words as they were
+  assert make_suggested_case_corrections(test_data['wrong case']) == 'USA is the best but usal is an invalid word without a case-only suggestion'
+  
 def test_find_split_idx():
   '''see if split idx finder returns the right index'''
   assert find_split_idx(test_data['split idx exists']) == 7
   assert find_split_idx(test_data['no split exists']) == None
   
+def test_sentence_smush_fixer():
+  '''test adding spaces between smushed words within an entire sentence'''
+  # unsmushes smushed sentence, ignores invalid words that can't be unsmushed
+  assert fix_sentence_smushes(test_data['smushed sentence']) == 'hey there how goes it today lkjasdlkfjlkdjf'
+  # leaves sentences alone if words are spelled right or can't be un-unsmushed
+  assert fix_sentence_smushes(test_data['non-smushed sentence']) == test_data['non-smushed sentence']
+  
 def test_output_path():
   '''make sure output path gets created correctly'''
   assert create_output_path(test_data['input path']) == '/path/to/input/output.csv'
+  

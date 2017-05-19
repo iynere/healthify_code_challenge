@@ -64,6 +64,7 @@ or, with the rapid rise of relatively simple machine-learning tools, it might be
 
 import csv, enchant, nltk, os, petl, re, string, sys
 
+from enchant.tokenize import get_tokenizer
 from nltk.tag import pos_tag
 
 d = enchant.Dict("en_US")

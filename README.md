@@ -55,6 +55,8 @@ One possibility w.r.t title-casing: if a lower-cased word doesn't exist in the d
 
 Another possibility w.r.t words with spaces missing between them: simply iterate over the characters, at each index checking if both the left-slice and right-slice are words. If we reach this point, we can reasonably assume that this is where the space is meant to go, and slice the string in two on that index. This will certainly not be 100% effective—there are probably many sets of two words that, when smushed together, have multiple ways of dividing them into two correct words—but it seems like a reasonable assumption for this corpus.
 
+Finally, we can probably assume that if a word in a non-all-title-cased string is capitalized once, it should be capitalized everywhere it appears (i.e., the name of an organization).
+
 ## Implementation
 
 I have written a Python program to clean this data. I use the [petl](http://petl.readthedocs.io) module to structure the ETL pipeline, the [pyenchant](https://pythonhosted.org/pyenchant) module for string parsing and spellchecking, and the [nltk](http://nltk.org) module for natural language processing.

@@ -3,11 +3,12 @@ Clean a 20,000-row .csv file.
 ## Usage
 
 This program is written for Python 2.
-Required dependencies are [petl](http://petl.readthedocs.io) and [pyenchant](https://pythonhosted.org/pyenchant):
+Required dependencies are [petl](http://petl.readthedocs.io), [pyenchant](https://pythonhosted.org/pyenchant), and [pytest](http://pytest.org):
 
 ```
 pip install petl
 pip install pyenchant
+pip install pytest
 ```
 
 To run the tests: navigate to the `healthify_code_challenge` directory and run `pytest -v`
@@ -73,7 +74,7 @@ Another possibility w.r.t words with spaces missing between them: simply iterate
 
 ## Implementation
 
-I have written a Python program to clean this data. I use the [petl](http://petl.readthedocs.io) module to structure the ETL pipeline and the [pyenchant](https://pythonhosted.org/pyenchant) module for string parsing and spellchecking.
+I have written a Python program to clean this data. I use the [petl](http://petl.readthedocs.io) module to structure the ETL pipeline, the [pyenchant](https://pythonhosted.org/pyenchant) module for string parsing and spellchecking, and the [pytest](http://pytest.org) module for tests.
 
 ## Further thoughts
 

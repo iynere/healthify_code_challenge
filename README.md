@@ -1,6 +1,6 @@
 ## Overview
 
-[*skip to Usage*](https://tktk)
+[*skip to Usage*](https://github.com/isar0se/healthify_code_challenge#usage)
 
 Clean a 20,000-row .csv file. Data have two fields: id (integer) and description (string). There are a couple of different issues with the description data:
 

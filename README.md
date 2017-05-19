@@ -10,7 +10,7 @@ pip install petl
 pip install pyenchant
 ```
 
-To run the tests: `pyenchant -v`
+To run the tests: `pytest -v`
 
 To run the program: navigate to the `healthify_code_challenge` directory and run `python transform.py /path/to/input/file.csv`
 

@@ -1,0 +1,71 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fnil\fcharset0 Cousine;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww13540\viewh17460\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs30 \cf0 # we need to separate words from their punctuation (just , & .)\
+# but we need to preserve the punctuation, so we can use nlp to determine to if, for example, a word is the first in a new sentence & should be title-cased.\
+# so we really need a completely parsed string, ie,\
+# "The Organization objective is to provide food to families and individuals in need. In addition, we provide clothing, limited financial assistance, and help coordinate other social services."\
+# to\
+# [The, Organization, Objective, is, to, provide, food, to, the, families, and, individuals, in, need, ., in, addition, ,, we, provide, clothing ,, limited, financial, assistance, ,, and, help, coordinate, other, social, services, .]\
+# because we also need to be able to correctly join the sentence back together, ie, we can't lose punctuation for good\
+# we could use an actual nlp parser\
+# but for now, simple solution:\
+# can't really use an actual regex, since we need to preserve what the character is\
+# we know it's just commas and periods\
+# 1. why not split('') then map & if char = . || , add a leading space, then rejoin('')\
+# 2. then split again on ' ' to do dictionary stuff\
+# 3. then join again\
+# 4. then map & reverse . / , stuff\
+# 5. there must be a better way ??????\
+\
+nlp info:\
+https://github.com/smilli/py-corenlp\
+http://www.nltk.org/nltk_data/\
+https://docs.python.org/2/library/pickle.html\
+https://scipy.org/install.html\
+https://www.continuum.io/downloads\
+https://www.enthought.com/products/canopy/\
+http://www.pyzo.org/\
+\
+'delete / transpose / replace / insert'\
+\
+'''\
+\
+'''\
+ml info:\
+https://www.microsoft.com/en-us/research/project/transform-data-by-example\
+'''\
+\
+'''\
+0.5\
+-no value in storing a list of words, as we can't assume any particular sample is correctly spelled\
+-no value in storing even a list of correct words\
+\
+1. we can easily detect which sentences have been accidentally title-cased: the 1st letter of each word will be capitalized. we can easily lowercase the entire string for that row, and then capitalize the first letter. we may, however, lose some properly title-cased nouns along the way.\
+\
+2. we can easily check words against a dictionary to find common proper nouns (ie, 'America', 'USA'); if the word doesn't exist in the dictionary (ie, 'america', 'usa') & the lowcased word is equal to the first dict suggestion, but lowcased, then it's probably a situation where we can simply replace the word with that dictionary suggestion. this takes care of examples like the 2 already mentioned, as well state names, very famous people, etc. this takes a very long time, as it's checking every word in 20,000 rows of data, but i dont think there's any way around that, except maybe with some memoization.\
+\
+3. we can also find '. ' and capitalize words after that\
+\
+4. we can also, in the process of low-casing the title-cased rows, \
+\
+OPTIMIZATIONS?\
+we could iterate through the csv & add all capitalized nouns we find to some kind of dict, then check lowercased nouns against it\
+\
+however, just because a noun is capitalized in one place (ie, 'Neighborly Care Network') doesn't mean it should be capitalized everywhere else (ie, 'we provide a network of care-related services')...\
+\
+there's a variety of mispelled words in the data, as well. can we do something about that without having to manually review the corrections?\
+\
+NATURAL LANGUAGE PROCESSING?\
+there's a wide range of NLP modules and frameworks for Python. however, part of speech taggers aren't really able to detect improperly lowercased prooper nouns, so we are back at square 1...\
+\
+with a large enough sample size & enough time, implementing something like this seems promising:\
+	\
+https://cs.cmu.edu/~llita/papers/lita.truecasing-acl2003.pdf\
+\
+or, with the rapid rise of relatively simple machine-learning tools, it might be effective to train an ai on a large corpus of text & add the ai to the ETL pipeline\
+}

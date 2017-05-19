@@ -52,7 +52,6 @@ def test_sentence_case_fixer():
   # process a title-cased sentence
   word_tokens_before = list(tokenizer(test_data['titlecased sentence']))
   word_tokens_after = list(tokenizer(fix_sentence_titlecasing(test_data['titlecased sentence'])))
-  
   # non-sentence-leading, non-allcaps words get lowercased
   assert word_tokens_after[1][0] == word_tokens_before[1][0].lower()
   assert word_tokens_after[11][0]  == word_tokens_before[11][0].lower()

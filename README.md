@@ -4,7 +4,7 @@
 
 Clean a 20,000-row .csv file. Data have two fields: id (integer) and description (string). There are a couple of different issues with the description data:
 
-* some descriptions are entirely, incorrectly title-cased
+* some descriptions are entirely title-cased
 * some words are misspelled
 * some words are mis-cased
 * there are spaces missing between some words

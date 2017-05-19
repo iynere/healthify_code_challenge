@@ -27,7 +27,7 @@ On its face, correcting the entirely title-cased descriptions is the simplest pa
 
 However, if we un-title-case all but the first word in each sentence of these descriptions, then we risk losing some appropriately title-cased words, i.e., proper nouns, acronyms, etc. We can easily check if a word consists entirely of capital letters, in which case we can leave it as it is (making the hopefully fairly reasonable assumption that it was written that way for a legitimate reason). Checking if a word is a actually a proper noun is more difficult:
 
-* natural language parsers tend to treat title-cased words as proper nounts simply on the basis that they are title-cased
+* natural language parsers tend to treat title-cased words as proper nouns simply on the basis that they are title-cased
 * any dictionary we use to look up proper nouns will have a limited corpus, and many of the proper nouns in these descriptions—for example, the name of a small community organization in some random city—will most likely not be in the dictionary
 
 Thus, it probably makes the most sense to de-title-case all non-all-caps, non-sentence-leading words in these all-title-cased descriptions, and attempt to re-title-case some of them afterwards by checking against the limited proper nouns available in various dictionaries.
@@ -53,7 +53,7 @@ Are there any subsets of the techniques described above that might be beneficial
 
 One possibility w.r.t title-casing: if a lower-cased word doesn't exist in the dictionary (for example, 'america' or 'usa') and the word is equal to a lower-cased version of one of its dictionary suggestions (in this case, 'America' or 'USA'), then it is probably a proper noun which has simply been mis-cased. In these cases, we can replace the word with this dictionary suggestion with relative confidence that we are choosing correctly.
 
-Another possibility w.r.t words with spaces missing between them: simply iterate over the characters, at each index checking if both the left-slice and right-slice are words. If we reach this point, we can reasonably assume that this is where the space is meant to go, and slice the string into halves on that index. This will certainly not be 100% effective—there are probably many sets of two words that, when smushed together, have multiple ways of dividing them into two correct words—but it seems like a reasonable assumption for this corpus.
+Another possibility w.r.t words with spaces missing between them: simply iterate over the characters, at each index checking if both the left-slice and right-slice are words. If we reach this point, we can reasonably assume that this is where the space is meant to go, and slice the string in two on that index. This will certainly not be 100% effective—there are probably many sets of two words that, when smushed together, have multiple ways of dividing them into two correct words—but it seems like a reasonable assumption for this corpus.
 
 ## Implementation
 
